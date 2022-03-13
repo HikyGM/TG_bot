@@ -1,23 +1,16 @@
 from telegram.ext import Updater, MessageHandler, Filters, ConversationHandler
-from telegram.ext import CallbackContext, CommandHandler
+from telegram.ext import CommandHandler
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Bot
 import csv
 import logging
-
-import sqlalchemy as sa
-import sqlalchemy.orm as orm
-from sqlalchemy.orm import Session
 import sqlalchemy.ext.declarative as dec
 from database import db_session
 from database.users import User
 from database.like_user import Like
 
 SqlAlchemyBase = dec.declarative_base()
-
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
-
 logger = logging.getLogger(__name__)
-
 NAME, PHOTO, GENDER, AGE, SITY, INFO, CHECK = range(7)
 LIKE, DISLIKE, SLEEP = range(3)
 VIEW_PROF, MY_PROF, DEL_PROF = range(3)
@@ -165,7 +158,6 @@ def add_db_user(id_user):
     generate_list_profiles(id_user)
 
 
-
 def generate_list_profiles(id_user):
     db_sess = db_session.create_session()
     users = list(set([elem[0] for elem in db_sess.query(User.id_user_tg).filter(User.id_user_tg != id_user).all()]))
@@ -250,24 +242,16 @@ def view_list_profiles(update, context):
                 reply_markup=ReplyKeyboardMarkup(
                     reply_keyboard,
                     one_time_keyboard=True,
-                    resize_keyboard=True,
-                ), )
-        # elif answer == '👎' or answer == '2':
-        #     pass
+                    resize_keyboard=True, ), )
     elif answer == '💤' or answer == '3':
-        pass
+        update.message.reply_text('Возвращайся, я тебя жду!)')
     else:
         update.message.reply_text(
             'Нет такого варианта ответа',
             reply_markup=ReplyKeyboardMarkup(
                 reply_keyboard,
                 one_time_keyboard=True,
-                resize_keyboard=True,
-            ), )
-
-
-def sleep(update, context):
-    pass
+                resize_keyboard=True, ), )
 
 
 def main():
@@ -291,15 +275,6 @@ def main():
         fallbacks=[CommandHandler('stop', stop)]
     )
     view_profiles_handler = MessageHandler(Filters.text, view_list_profiles)
-    sleep_handler = ConversationHandler(
-        entry_points=[CommandHandler('sleep', sleep)],
-        states={
-            VIEW_PROF: [MessageHandler(Filters.text, name)],
-            MY_PROF: [MessageHandler(Filters.regex('^(Муж|Жен)$'), gender)],
-            DEL_PROF: [MessageHandler(Filters.photo, photo)]
-        },
-        fallbacks=[CommandHandler('stop', stop)]
-    )
     dp.add_handler(start_handler)
     dp.add_handler(view_profiles_handler)
     updater.start_polling()
