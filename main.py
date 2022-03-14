@@ -9,7 +9,6 @@ from database.users import User
 from database.like_user import Like
 import os
 
-
 SqlAlchemyBase = dec.declarative_base()
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -284,5 +283,4 @@ def main():
     updater.idle()
 
 
-if __name__ == '__main__':
-    main()
+main()
