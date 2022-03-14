@@ -7,6 +7,8 @@ import sqlalchemy.ext.declarative as dec
 from database import db_session
 from database.users import User
 from database.like_user import Like
+import os
+
 
 SqlAlchemyBase = dec.declarative_base()
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
@@ -155,6 +157,7 @@ def add_db_user(id_user):
     user.info_user = data[7][0]
     db_sess.add(user)
     db_sess.commit()
+    os.remove(f'files/{data[0][0]}.csv')
     generate_list_profiles(id_user)
 
 
